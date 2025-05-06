@@ -52,43 +52,31 @@
           </svg>
         </a>
       </div>
+      <style>
+        /* Add this to your CSS file or inside a <style> tag */
+.hide-scrollbar {
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;    /* IE 10+ */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;               /* Chrome, Safari, Opera */
+}
 
+      </style>
       <!-- Chat Room -->
-      <div id="chat-room" class="flex-1 overflow-y-auto pt-4 space-y-3">
+      <div id="chat-room" class="flex-1 overflow-y-auto pt-4 space-y-3 hide-scrollbar">
         {% for message in user_messages %}
-          {% if message|divisibleby:3 %}
-            <div class="w-full flex justify-end">
-              <div class="block max-w-3/5 grid">
-                <div class="px-3.5 py-2 bg-green-500 rounded-3xl rounded-tr-none justify-start items-center gap-3 inline-flex">
-                  <h5 class="text-gray-900 text-sm font-normal leading-snug">{{ forloop.counter }} I’m down! Any ideas??</h5>
-                </div>
-                <div class="items-center inline-flex">
-                  <p class="text-gray-500 text-xs font-normal leading-4 py-1">05:14 PM</p>
-                </div>
-              </div>
-            </div>
-          {% else %}
-            <div class="w-full flex justify-start">
-              <div class="grid max-w-3/5">
-                <div class="px-3.5 py-2 bg-white border rounded-3xl rounded-tl-none justify-start items-center gap-3 inline-flex">
-                  <h5 class="text-gray-900 text-sm font-normal leading-snug">I’m down! Any ideas??</h5>
-                </div>
-                <div class="justify-end items-center inline-flex">
-                  <p class="text-gray-500 text-xs font-normal leading-4 py-1">05:14 PM</p>
-                </div>
-              </div>
-            </div>
-          {% endif %}
+          {% include 'chat/partials/message.html' %}
         {% endfor %}
       </div>
 
       <!-- Sticky Footer -->
       <div class="z-30 sticky bottom-0 bg-[#f4efd5] py-1.5">
-        <form class="flex items-center" hx-ext="ws" ws-connect="/ws/chat/public/" ws-send>
-          <label for="simple-search" class="sr-only">Message</label>
+        <form id="message-form" class="flex items-center" hx-ext="ws" ws-connect="/ws/chat/7f9170e4-cdb1-45e1-b22a-550930e/" ws-send>
+          <label for="message-input" class="sr-only">Message</label>
 
           <div class="relative w-full">
-            <input type="text" id="simple-search" class="text-gray-900 text-sm border-2 border-[#b9c0ae] focus:border-2 focus:border-[#305551] focus:outline-none rounded-full block w-full ps-4 p-2.5" placeholder="Type your message" required />
+            <input type="text" id="message-input" name="body" class="text-gray-900 text-sm border-2 border-[#b9c0ae] focus:border-2 focus:border-[#305551] focus:outline-none rounded-full block w-full ps-4 p-2.5" placeholder="Type your message" required />
           </div>
           <button type="submit" class="text-[#f4efd5] bg-[#305551] hover:bg-[#94ab3d] p-2.5 ms-2 text-sm font-medium rounded-full focus:outline-none">
             <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
@@ -143,6 +131,19 @@
     document.querySelectorAll('.random-bg').forEach((element) => {
       let randomGradient = getRandomTailwindGradient()
       element.classList.add(...randomGradient.split(' '))
+    })
+    document.getElementById('message-form').addEventListener('submit', function () {
+      setTimeout(() => {
+        document.getElementById('message-input').value = ''
+      }, 1)
+    })
+    window.addEventListener('DOMContentLoaded', function () {
+      const wrap = document.getElementById('chat-room')
+      wrap.scrollTop = wrap.scrollHeight
+    })
+    document.body.addEventListener('htmx:wsAfterMessage', function () {
+      const wrap = document.getElementById('chat-room')
+      wrap.scrollTop = wrap.scrollHeight
     })
   </script>
 {% endblock %}

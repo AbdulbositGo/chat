@@ -1,0 +1,42 @@
+<div {% if ws %}id="chat-room" hx-swap-oob="beforeend" class="fade-in"{% endif %}>
+  {% if message.user == user %}
+    <div class="w-full flex justify-end {% if ws %}fade-in{% endif %}">
+      <div class="block max-w-3/5 grid">
+        <div class="px-3.5 py-2 bg-green-500 rounded-3xl rounded-tr-none justify-start items-center gap-3 inline-flex">
+          <h5 class="text-gray-900 text-sm font-normal leading-snug">{{ message.body }}</h5>
+        </div>
+        <div class="items-center inline-flex">
+          <p class="text-gray-500 text-xs font-normal leading-4 py-1">{{ message.created }}</p>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="w-full flex justify-start">
+      <div class="grid max-w-3/5">
+        <div class="px-3.5 py-2 bg-white border rounded-3xl rounded-tl-none justify-start items-center gap-3 inline-flex">
+          <h5 class="text-gray-900 text-sm font-normal leading-snug">{{ message.body }}</h5>
+        </div>
+        <div class="justify-end items-center inline-flex">
+          <p class="text-gray-500 text-xs font-normal leading-4 py-1">{{ message.created }}</p>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 0.2s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  
+</style>

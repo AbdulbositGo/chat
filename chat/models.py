@@ -9,7 +9,7 @@ User = get_user_model()
 
 
 class Chat(models.Model):
-    name = models.CharField(max_length=32, default=uuid4)
+    name = models.CharField(max_length=36, default=uuid4)
     users_online = models.ManyToManyField(User, related_name='online_users', blank=True)
 
     created = models.DateTimeField(auto_now_add=True)
@@ -36,4 +36,4 @@ class Message(models.Model):
         verbose_name_plural = _('Messages')
 
     def __str__(self):
-        return self.name
+        return self.body
