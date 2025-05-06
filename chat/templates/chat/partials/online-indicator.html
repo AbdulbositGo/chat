@@ -1,0 +1,7 @@
+{% if online_count %}
+  <span id="online-indicator" hx-swap-oob="outerHTML" class="absolute right-0 bottom-0 w-3.5 h-3.5 bg-green-400 border-2 border-[#f4efd5] rounded-full fade-in"></span>
+  <span id="last-seen" hx-swap-oob="outerHTML" class="text-xs text-gray-700 leading-none">online</span>
+{% else %}
+  <span id="last-seen" hx-swap-oob="outerHTML" class="text-xs text-gray-700 leading-none">last seen: {{ request.user.last_login|timesince }} ago {{ request.user }}</span>
+  <span id="online-indicator" hx-swap-oob="outerHTML" class="absolute right-0 bottom-0 w-3.5 h-3.5 bg-gray-400 border-2 border-[#f4efd5] rounded-full fade-out"></span>
+{% endif %}

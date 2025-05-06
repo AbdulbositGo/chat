@@ -15,6 +15,12 @@ class ChatConsumer(WebsocketConsumer):
             self.chat_name,
             self.channel_name,
         )
+
+        if self.user not in self.chat.users_online.all():
+            self.chat.users_online.add(self.user)
+            self.members = self.chat.users_online
+            self.online_indicator()
+
         return self.accept()
 
     def receive(self, text_data=None, bytes_data=None):
@@ -42,9 +48,30 @@ class ChatConsumer(WebsocketConsumer):
         )
         self.send(text_data=partial)
 
+    def online_indicator(self):
+        event = {
+            'type': 'online_indicator_handler',
+            'online_count': self.members.count() - 1,
+        }
+        async_to_sync(self.channel_layer.group_send)(
+            self.chat_name,
+            event,
+        )
+
+    def online_indicator_handler(self, event):
+        online_count = event['online_count']
+        online_indicator = render_to_string(
+            'chat/partials/online-indicator.html',
+            {'online_count': online_count, 'ws': True, 'request': self.scope},
+        )
+        self.send(text_data=online_indicator)
+
     def disconnect(self, code):
         async_to_sync(self.channel_layer.group_discard)(
             self.chat_name,
             self.channel_name,
         )
-        return
+        if self.user in self.chat.users_online.all():
+            self.chat.users_online.remove(self.user)
+            self.members = self.chat.users_online
+            self.online_indicator()
