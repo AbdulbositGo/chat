@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <link rel="shortcut icon" type="image/svg" href="{% static 'images/icon.svg' %}" />
+    <link rel="stylesheet" href="{% static 'css/local.css' %}" />
+    <script src="{% static 'js/tailwind.min.js' %}"></script>
+    <script src="{% static 'js/alpinejs.min.js' %}" defer></script>
+    <script src="{% static 'js/htmx.min.js' %}"></script>
+    <script src="https://unpkg.com/htmx-ext-ws" crossorigin="anonymous"></script>
+    <title id="page-title">Topchi</title>
+  </head>
+  <body class="select-none">
+    <div id="page-idicator" class="fixed w-full top-0 loader h-1 htmx-indicator"></div>
+    <main class="container m-auto max-w-5xl rounded-2xl px-2 lg:px-0">
+      <div id="main-section">
+        {% block content %}
+
+        {% endblock %}
+      </div>
+    </main>
+    <script src="{% static 'js/flowbite.min.js' %}"></script>
+    <script src="{% static 'js/local.js' %}"></script>
+  </body>
+</html>

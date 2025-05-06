@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div id="content" class="md:grid md:grid-cols-3 md:gap-6">
+    <!-- People (Left Sidebar) -->
+    <div class="md:flex md:flex-col h-screen hidden">
+      <!-- Sticky Header -->
+      <div class="sticky top-0 bg-[#f4efd5] z-10 pb-2">
+        <h2 class="text-xl md:text-2xl w-full font-bold leading-none my-4">Chat</h2>
+        <div>
+          <form class="flex items-center">
+            <label for="chat-search" class="sr-only">Search</label>
+            <div class="relative w-full">
+              <input type="text" id="chat-search" class="text-gray-900 text-sm border-2 border-[#b9c0ae] focus:border-2 focus:border-[#305551] focus:outline-none rounded-full block w-full ps-4 p-1.5" placeholder="Search Chats" required />
+            </div>
+            <button type="submit" class="text-[#f4efd5] bg-[#305551] hover:bg-[#94ab3d] p-2.5 ms-2 text-sm font-medium rounded-full focus:outline-none">
+              <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+              </svg>
+              <span class="sr-only">Search</span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Chat List -->
+      {% include 'chat/partials/users-list.html' %}
+    </div>
+
+    <!-- Chat -->
+    <div class="md:col-span-2 h-screen flex flex-col pl-2">
+      <!-- Sticky Header -->
+      <div class="flex items-center justify-between z-30 sticky top-0 py-3 bg-[#f4efd5]">
+        <div class="flex space-x-2 md:space-x-4">
+          <div class="flex justify-between items-center gap-2">
+            <button type="button" data-drawer-target="drawer-navigation" data-drawer-show="drawer-navigation" aria-controls="drawer-navigation" class="md:hidden">
+              <svg class="size-8" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h14" />
+              </svg>
+            </button>
+            <div class="random-bg inline-flex items-center justify-center size-10 md:size-12 text-lg lg:text-xl rounded-full bg-radial-[at_25%_25%] from-green-300 to-green-600 to-75% font-semibold text-white">AG</div>
+          </div>
+          <div class="flex flex-col justify-between items-start">
+            <h2 id="user" class="text-xl font-bold leading-none mt-0.5 md:mt-1.5">{{ request.user.first_name|default:request.user.username }} {{ request.user.last_name }}</h2>
+            <h2 class="text-xs text-gray-700 leading-none">last seen: {{ request.user.last_login|timesince }} ago</h2>
+          </div>
+        </div>
+        <a href="{{ request.user.get_absolute_url }}">
+          <svg class="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+            <path d="M3.99982 11.9998L19.9998 11.9998" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M8.99963 17C8.99963 17 3.99968 13.3176 3.99966 12C3.99965 10.6824 8.99966 7 8.99966 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </a>
+      </div>
+
+      <!-- Chat Room -->
+      <div id="chat-room" class="flex-1 overflow-y-auto pt-4 space-y-3">
+        {% for message in user_messages %}
+          {% if message|divisibleby:3 %}
+            <div class="w-full flex justify-end">
+              <div class="block max-w-3/5 grid">
+                <div class="px-3.5 py-2 bg-green-500 rounded-3xl rounded-tr-none justify-start items-center gap-3 inline-flex">
+                  <h5 class="text-gray-900 text-sm font-normal leading-snug">{{ forloop.counter }} I’m down! Any ideas??</h5>
+                </div>
+                <div class="items-center inline-flex">
+                  <p class="text-gray-500 text-xs font-normal leading-4 py-1">05:14 PM</p>
+                </div>
+              </div>
+            </div>
+          {% else %}
+            <div class="w-full flex justify-start">
+              <div class="grid max-w-3/5">
+                <div class="px-3.5 py-2 bg-white border rounded-3xl rounded-tl-none justify-start items-center gap-3 inline-flex">
+                  <h5 class="text-gray-900 text-sm font-normal leading-snug">I’m down! Any ideas??</h5>
+                </div>
+                <div class="justify-end items-center inline-flex">
+                  <p class="text-gray-500 text-xs font-normal leading-4 py-1">05:14 PM</p>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- Sticky Footer -->
+      <div class="z-30 sticky bottom-0 bg-[#f4efd5] py-1.5">
+        <form class="flex items-center" hx-ext="ws" ws-connect="/ws/chat/public/" ws-send>
+          <label for="simple-search" class="sr-only">Message</label>
+
+          <div class="relative w-full">
+            <input type="text" id="simple-search" class="text-gray-900 text-sm border-2 border-[#b9c0ae] focus:border-2 focus:border-[#305551] focus:outline-none rounded-full block w-full ps-4 p-2.5" placeholder="Type your message" required />
+          </div>
+          <button type="submit" class="text-[#f4efd5] bg-[#305551] hover:bg-[#94ab3d] p-2.5 ms-2 text-sm font-medium rounded-full focus:outline-none">
+            <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+              <path d="M21.0477 3.05293C18.8697 0.707363 2.48648 6.4532 2.50001 8.551C2.51535 10.9299 8.89809 11.6617 10.6672 12.1581C11.7311 12.4565 12.016 12.7625 12.2613 13.8781C13.3723 18.9305 13.9301 21.4435 15.2014 21.4996C17.2278 21.5892 23.1733 5.342 21.0477 3.05293Z" stroke="currentColor" stroke-width="1.5" />
+              <path d="M11.5 12.5L15 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span class="sr-only">Send Message</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div id="drawer-navigation" class="flex flex-col fixed z-40 w-64 h-screen ps-3 pe-1 pt-4 pb-10 overflow-y-auto transition-transform -translate-x-full bg-[#f4efd5]" tabindex="-1" aria-labelledby="drawer-navigation-label">
+    <div class="sticky top-0 bg-[#f4efd5] z-10 pb-2">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl md:text-2xl w-full font-bold leading-none">Chat</h2>
+        <button type="button" data-drawer-hide="drawer-navigation" aria-controls="drawer-navigation" class="">
+          <svg class="size-5 hover:fill-[#305551]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+            <path d="M10.2471 6.7402C11.0734 7.56657 11.4866 7.97975 12.0001 7.97975C12.5136 7.97975 12.9268 7.56658 13.7531 6.74022L13.7532 6.7402L15.5067 4.98669L15.5067 4.98668C15.9143 4.5791 16.1182 4.37524 16.3302 4.25283C17.3966 3.63716 18.2748 4.24821 19.0133 4.98669C19.7518 5.72518 20.3628 6.60345 19.7472 7.66981C19.6248 7.88183 19.421 8.08563 19.0134 8.49321L17.26 10.2466C16.4336 11.073 16.0202 11.4864 16.0202 11.9999C16.0202 12.5134 16.4334 12.9266 17.2598 13.7529L19.0133 15.5065C19.4209 15.9141 19.6248 16.1179 19.7472 16.3299C20.3628 17.3963 19.7518 18.2746 19.0133 19.013C18.2749 19.7516 17.3965 20.3626 16.3302 19.7469C16.1182 19.6246 15.9143 19.4208 15.5067 19.013L13.7534 17.2598L13.7533 17.2597C12.9272 16.4336 12.5136 16.02 12.0001 16.02C11.4867 16.02 11.073 16.4336 10.2469 17.2598L10.2469 17.2598L8.49353 19.013C8.0859 19.4208 7.88208 19.6246 7.67005 19.7469C6.60377 20.3626 5.72534 19.7516 4.98693 19.013C4.2484 18.2746 3.63744 17.3963 4.25307 16.3299C4.37549 16.1179 4.5793 15.9141 4.98693 15.5065L6.74044 13.7529C7.56681 12.9266 7.98 12.5134 7.98 11.9999C7.98 11.4864 7.5666 11.073 6.74022 10.2466L4.98685 8.49321C4.57928 8.08563 4.37548 7.88183 4.25307 7.66981C3.63741 6.60345 4.24845 5.72518 4.98693 4.98669C5.72542 4.24821 6.60369 3.63716 7.67005 4.25283C7.88207 4.37524 8.08593 4.5791 8.49352 4.98668L8.49353 4.98669L10.2471 6.7402Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span class="sr-only">Close menu</span>
+        </button>
+      </div>
+      <form class="flex items-center">
+        <label for="sidebar-search" class="sr-only">Search</label>
+        <div class="relative w-full">
+          <input type="search" id="sidebar-search" class="text-gray-900 text-sm border-2 border-[#b9c0ae] focus:border-2 focus:border-[#305551] focus:outline-none rounded-full block w-full ps-4 p-1.5" placeholder="Search Chats" required />
+        </div>
+        <button type="submit" class="text-[#f4efd5] bg-[#305551] hover:bg-[#94ab3d] p-2.5 ms-2 text-sm font-medium rounded-full focus:outline-none">
+          <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+          </svg>
+          <span class="sr-only">Search</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Chat List -->
+    {% include 'chat/partials/users-list.html' %}
+  </div>
+
+  <script>
+    function getRandomTailwindGradient() {
+      const colors = ['red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose', 'slate', 'gray', 'zinc', 'neutral', 'stone']
+      let randomColor = colors[Math.floor(Math.random() * colors.length)]
+      return `bg-gradient-to-br from-${randomColor}-400 to-${randomColor}-600`
+    }
+    
+    // Barcha `.random-bg` klassli elementlarga tasodifiy gradient qo‘shish
+    document.querySelectorAll('.random-bg').forEach((element) => {
+      let randomGradient = getRandomTailwindGradient()
+      element.classList.add(...randomGradient.split(' '))
+    })
+  </script>
+{% endblock %}

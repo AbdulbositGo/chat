@@ -1,0 +1,13 @@
+<div class="flex-1 overflow-y-auto h-full rounded-xl space-y-3 py-4">
+  <div class="space-y-3">
+    {% for chat in chats %}
+      <div class="flex space-x-2 md:space-x-4 w-full">
+        <div class="random-bg inline-flex items-center justify-center size-10 md:size-12 text-lg lg:text-xl rounded-full bg-radial-[at_25%_25%] from-green-300 to-green-600 to-75% font-semibold text-white">AG</div>
+        <div class="flex flex-col justify-between items-start">
+          <h2 id="user" class="text-lg font-semibold leading-none mt-0.5 md:mt-1.5">{{ chat.first_name|default:chat.username }} {{ chat.last_name }}</h2>
+          <h2 class="text-xs text-gray-500 leading-none">last seen: {{ chat.last_login|default:'recently' }}</h2>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
