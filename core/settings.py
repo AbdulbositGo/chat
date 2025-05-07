@@ -113,11 +113,7 @@ if ENVIRONMENT == 'production':
         'default': {
             'BACKEND': 'channels_redis.core.RedisChannelLayer',
             'CONFIG': {
-                'hosts': [
-                    (
-                        'redis://default:djgBcKyUvjUUBXkbmzhsIzjujkDdugwx@shuttle.proxy.rlwy.net:48985'
-                    )
-                ],
+                'hosts': [(os.getenv('REDIS_URL'))],
             },
         }
     }
